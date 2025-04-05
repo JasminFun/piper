@@ -143,5 +143,21 @@ def load_state_dict(model, saved_state_dict):
 # -----------------------------------------------------------------------------
 
 
+class VitsModel(VitsModel):
+    def train_dataloader(self):
+        loader = super().train_dataloader()
+        # 添加数据加载器的worker数量
+        loader.num_workers = 12
+        return loader
+
+    def setup(self, stage=None):
+        super().setup(stage)
+        # 添加数据集检查
+        if len(self._train_dataset) == 0:
+            raise ValueError(f"没有找到训练数据在: {self.dataset}")
+        else:
+            _LOGGER.info(f"找到 {len(self._train_dataset)} 个训练样本")
+
+
 if __name__ == "__main__":
     main()
